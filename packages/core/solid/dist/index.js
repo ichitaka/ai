@@ -157,9 +157,8 @@ var toolExecutionMessageStreamPart = {
   code: "9",
   name: "tool_execution_message",
   parse: (value) => {
-    if (value == null || typeof value !== "object" || !("id" in value) || !("role" in value) || !("tool_call_id" in value) || !("name" in value) || !("content" in value) || typeof value.id !== "string" || typeof value.role !== "string" || typeof value.tool_call_id !== "string" || typeof value.name !== "string" || value.role !== "tool" || !Array.isArray(value.content) || !value.content.every(
-      (item) => item != null && typeof item === "object" && "type" in item && item.type === "text" && "text" in item && item.text != null && typeof item.text === "object" && "value" in item.text && typeof item.text.value === "string"
-    )) {
+    if (value == null || typeof value !== "object" || !("id" in value) || !("role" in value) || !("tool_call_id" in value) || !("name" in value) || !("content" in value) || typeof value.id !== "string" || typeof value.role !== "string" || typeof value.tool_call_id !== "string" || typeof value.name !== "string" || typeof value.content !== "string" || // Check if content is a string
+    value.role !== "tool") {
       throw new Error(
         '"tool_execution_message" parts expect an object with an "id", "role", "name" and "content" property.'
       );
