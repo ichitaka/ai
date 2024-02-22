@@ -114,6 +114,7 @@ type ChatRequest = {
 };
 type FunctionCallHandler = (chatMessages: Message$1[], functionCall: FunctionCall) => Promise<ChatRequest | void>;
 type ToolCallHandler = (chatMessages: Message$1[], toolCalls: ToolCall[]) => Promise<ChatRequest | void>;
+type ToolExecutionMessageHandler = (chatMessages: Message$1[], toolExecutionMessage: ToolExecutionMessage) => Promise<ChatRequest | void>;
 type RequestOptions = {
     headers?: Record<string, string> | Headers;
     body?: object;
@@ -158,6 +159,13 @@ type UseChatOptions = {
      * automatically to the API and will be used to update the chat.
      */
     experimental_onToolCall?: ToolCallHandler;
+    /**
+     * Callback function to be called when the API response is received that
+     * contains an executed tool call.
+     * If the function returns a `ChatRequest` object, the request will be sent
+     * automatically to the API and will be used to update the chat.
+     */
+    experimental_onToolExecution?: ToolExecutionMessageHandler;
     /**
      * Callback function to be called when the API response is received.
      */
@@ -978,4 +986,4 @@ declare function streamToResponse(res: ReadableStream, response: ServerResponse,
     status?: number;
 }): void;
 
-export { AIStream, AIStreamCallbacksAndOptions, AIStreamParser, AIStreamParserOptions, AWSBedrockAnthropicStream, AWSBedrockCohereStream, AWSBedrockLlama2Stream, AWSBedrockStream, AnthropicStream, AssistantMessage, COMPLEX_HEADER, ChatRequest, ChatRequestOptions, CohereStream, CompletionUsage, CreateMessage, DataMessage, Function, FunctionCall, FunctionCallHandler, FunctionCallPayload, GoogleGenerativeAIStream, HuggingFaceStream, IdGenerator, InkeepAIStreamCallbacksAndOptions, InkeepChatResultCallbacks, InkeepOnFinalMetadata, InkeepStream, JSONValue, LangChainStream, Message$1 as Message, OpenAIStream, OpenAIStreamCallbacks, ReactResponseRow, ReplicateStream, RequestOptions, StreamString, StreamingTextResponse, Tool, ToolCall, ToolCallHandler, ToolCallPayload, ToolChoice, ToolExecutionMessage, UseChatOptions, UseCompletionOptions, createCallbacksTransformer, createChunkDecoder, createEventStreamTransformer, createStreamDataTransformer, experimental_AssistantResponse, experimental_StreamData, experimental_StreamingReactResponse, isStreamStringEqualToType, nanoid, readableFromAsyncIterable, streamToResponse, trimStartOfStreamHelper };
+export { AIStream, AIStreamCallbacksAndOptions, AIStreamParser, AIStreamParserOptions, AWSBedrockAnthropicStream, AWSBedrockCohereStream, AWSBedrockLlama2Stream, AWSBedrockStream, AnthropicStream, AssistantMessage, COMPLEX_HEADER, ChatRequest, ChatRequestOptions, CohereStream, CompletionUsage, CreateMessage, DataMessage, Function, FunctionCall, FunctionCallHandler, FunctionCallPayload, GoogleGenerativeAIStream, HuggingFaceStream, IdGenerator, InkeepAIStreamCallbacksAndOptions, InkeepChatResultCallbacks, InkeepOnFinalMetadata, InkeepStream, JSONValue, LangChainStream, Message$1 as Message, OpenAIStream, OpenAIStreamCallbacks, ReactResponseRow, ReplicateStream, RequestOptions, StreamString, StreamingTextResponse, Tool, ToolCall, ToolCallHandler, ToolCallPayload, ToolChoice, ToolExecutionMessage, ToolExecutionMessageHandler, UseChatOptions, UseCompletionOptions, createCallbacksTransformer, createChunkDecoder, createEventStreamTransformer, createStreamDataTransformer, experimental_AssistantResponse, experimental_StreamData, experimental_StreamingReactResponse, isStreamStringEqualToType, nanoid, readableFromAsyncIterable, streamToResponse, trimStartOfStreamHelper };

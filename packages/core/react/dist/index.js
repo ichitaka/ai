@@ -535,6 +535,7 @@ async function processChatStream({
   getStreamedResponse: getStreamedResponse2,
   experimental_onFunctionCall,
   experimental_onToolCall,
+  experimental_onToolExecution,
   updateChatRequest,
   getCurrentMessages
 }) {
@@ -543,7 +544,7 @@ async function processChatStream({
     if ("messages" in messagesAndDataOrJustMessage) {
       let hasFollowingResponse = false;
       for (const message of messagesAndDataOrJustMessage.messages) {
-        if ((message.function_call === void 0 || typeof message.function_call === "string") && (message.tool_calls === void 0 || typeof message.tool_calls === "string")) {
+        if ((message.function_call === void 0 || typeof message.function_call === "string") && (message.tool_calls === void 0 || typeof message.tool_calls === "string") && message.role !== "tool") {
           continue;
         }
         hasFollowingResponse = true;
@@ -579,6 +580,27 @@ async function processChatStream({
             break;
           }
           updateChatRequest(toolCallResponse);
+        }
+        if (experimental_onToolExecution) {
+          if (message.role !== "tool" || !message.content || !message.tool_call_id || !message.name) {
+            continue;
+          }
+          const toolExecutionMessage = {
+            id: message.id,
+            role: message.role,
+            content: message.content,
+            tool_call_id: message.tool_call_id,
+            name: message.name
+          };
+          const toolExecutionResponse = await experimental_onToolExecution(
+            getCurrentMessages(),
+            toolExecutionMessage
+          );
+          if (toolExecutionResponse === void 0) {
+            hasFollowingResponse = false;
+            break;
+          }
+          updateChatRequest(toolExecutionResponse);
         }
       }
       if (!hasFollowingResponse) {
@@ -747,6 +769,7 @@ function useChat({
   sendExtraMessageFields,
   experimental_onFunctionCall,
   experimental_onToolCall,
+  experimental_onToolExecution,
   onResponse,
   onFinish,
   onError,
@@ -811,6 +834,7 @@ function useChat({
           ),
           experimental_onFunctionCall,
           experimental_onToolCall,
+          experimental_onToolExecution,
           updateChatRequest: (chatRequestParam) => {
             chatRequest = chatRequestParam;
           },

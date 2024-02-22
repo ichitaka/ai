@@ -112,6 +112,7 @@ type ChatRequest = {
 };
 type FunctionCallHandler = (chatMessages: Message[], functionCall: FunctionCall) => Promise<ChatRequest | void>;
 type ToolCallHandler = (chatMessages: Message[], toolCalls: ToolCall[]) => Promise<ChatRequest | void>;
+type ToolExecutionMessageHandler = (chatMessages: Message[], toolExecutionMessage: ToolExecutionMessage) => Promise<ChatRequest | void>;
 type RequestOptions = {
     headers?: Record<string, string> | Headers;
     body?: object;
@@ -156,6 +157,13 @@ type UseChatOptions = {
      * automatically to the API and will be used to update the chat.
      */
     experimental_onToolCall?: ToolCallHandler;
+    /**
+     * Callback function to be called when the API response is received that
+     * contains an executed tool call.
+     * If the function returns a `ChatRequest` object, the request will be sent
+     * automatically to the API and will be used to update the chat.
+     */
+    experimental_onToolExecution?: ToolExecutionMessageHandler;
     /**
      * Callback function to be called when the API response is received.
      */
@@ -262,6 +270,13 @@ type UseCompletionOptions = {
 type JSONValue = null | string | number | boolean | {
     [x: string]: JSONValue;
 } | Array<JSONValue>;
+type ToolExecutionMessage = {
+    id: string;
+    role: 'tool';
+    name: string;
+    tool_call_id: string;
+    content: string;
+};
 
 /**
  * A stream wrapper to send custom JSON-encoded data back to the client.
@@ -352,7 +367,7 @@ type StreamingReactResponseAction = (payload: {
     messages: Message[];
     data?: Record<string, string>;
 }) => Promise<experimental_StreamingReactResponse>;
-declare function useChat({ api, id, initialMessages, initialInput, sendExtraMessageFields, experimental_onFunctionCall, experimental_onToolCall, onResponse, onFinish, onError, credentials, headers, body, generateId, }?: Omit<UseChatOptions, 'api'> & {
+declare function useChat({ api, id, initialMessages, initialInput, sendExtraMessageFields, experimental_onFunctionCall, experimental_onToolCall, experimental_onToolExecution, onResponse, onFinish, onError, credentials, headers, body, generateId, }?: Omit<UseChatOptions, 'api'> & {
     api?: string | StreamingReactResponseAction;
     key?: string;
 }): UseChatHelpers;
