@@ -41,6 +41,21 @@ describe('stream-parts', () => {
       });
     });
 
+    it('should parse a tool execution message line', () => {
+      const input =
+        '9:{"tool_execution_message": {"name":"get_current_weather","tool_call_id":"tool_0","content":"The weather is currently 25 degrees celsius."}}';
+
+      expect(parseStreamPart(input)).toEqual({
+        type: 'tool_execution_message',
+        value: {
+          name: 'get_current_weather',
+          role: 'tool',
+          tool_call_id: 'tool_0',
+          content: 'The weather is currently 25 degrees celsius.',
+        },
+      });
+    });
+
     it('should parse a tool call line', () => {
       const input =
         '7:{"tool_calls": [{"type": "function", "id": "tool_0", "function": {"name":"get_current_weather","arguments":"{\\"location\\": \\"Charlottesville, Virginia\\",\\"format\\": \\"celsius\\"}"}}]}';
