@@ -510,14 +510,18 @@ async function processChatStream({
           continue;
         }
         hasFollowingResponse = true;
-        if (experimental_onFunctionCall) {
+        if (experimental_onFunctionCall && message.tool_calls !== void 0) {
+          console.warn(
+            "experimental_onFunctionCall should not be defined when using tools"
+          );
+        }
+        if (experimental_onToolCall && message.function_call !== void 0) {
+          console.warn(
+            "experimental_onToolCall should not be defined when using functions"
+          );
+        }
+        if (experimental_onFunctionCall && typeof message.function_call === "object") {
           const functionCall = message.function_call;
-          if (typeof functionCall !== "object") {
-            console.warn(
-              "experimental_onFunctionCall should not be defined when using tools"
-            );
-            continue;
-          }
           const functionCallResponse = await experimental_onFunctionCall(
             getCurrentMessages(),
             functionCall
@@ -528,14 +532,8 @@ async function processChatStream({
           }
           updateChatRequest(functionCallResponse);
         }
-        if (experimental_onToolCall) {
+        if (experimental_onToolCall && (Array.isArray(message.tool_calls) && message.tool_calls.every((toolCall) => typeof toolCall === "object"))) {
           const toolCalls = message.tool_calls;
-          if (!Array.isArray(toolCalls) || toolCalls.some((toolCall) => typeof toolCall !== "object")) {
-            console.warn(
-              "experimental_onToolCall should not be defined when using tools"
-            );
-            continue;
-          }
           const toolCallResponse = await experimental_onToolCall(getCurrentMessages(), toolCalls);
           if (toolCallResponse === void 0) {
             hasFollowingResponse = false;
@@ -543,10 +541,7 @@ async function processChatStream({
           }
           updateChatRequest(toolCallResponse);
         }
-        if (experimental_onToolExecution) {
-          if (message.role !== "tool" || !message.content || !message.tool_call_id || !message.name) {
-            continue;
-          }
+        if (experimental_onToolExecution && message.role === "tool" && typeof message.content === "string" && message.tool_call_id !== void 0 && message.name !== void 0) {
           const toolExecutionMessage = {
             id: message.id,
             role: message.role,
