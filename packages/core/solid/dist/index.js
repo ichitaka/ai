@@ -376,6 +376,10 @@ async function parseComplexResponse({
         prefixMap["tool_calls"],
         message_annotations
       );
+      toolExecutionMessage = assignAnnotationsToMessage(
+        prefixMap["tool_execution_message"],
+        message_annotations
+      );
       responseMessage = assignAnnotationsToMessage(
         prefixMap["text"],
         message_annotations
@@ -385,7 +389,8 @@ async function parseComplexResponse({
       const messagePrefixKeys = [
         "text",
         "function_call",
-        "tool_calls"
+        "tool_calls",
+        "tool_execution_message"
       ];
       messagePrefixKeys.forEach((key) => {
         if (prefixMap[key]) {
